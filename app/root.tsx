@@ -1,4 +1,8 @@
-import type { LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -9,6 +13,7 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css";
+import { Layout } from "./components/Layout";
 import { Theme, ThemeProvider } from "./context/Theme";
 import useTheme from "./hooks/useTheme";
 import { getThemeSession } from "./session/theme.server";
@@ -43,8 +48,10 @@ function App() {
         <Meta />
         <Links />
       </head>
-      <body>
-        <Outlet />
+      <body className="flex min-h-screen w-full flex-col bg-gray-100 dark:bg-gray-900 p-4">
+        <Layout>
+          <Outlet />
+        </Layout>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
