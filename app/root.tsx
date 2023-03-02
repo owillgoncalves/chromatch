@@ -1,4 +1,4 @@
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -6,8 +6,24 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css";
+import { Theme, ThemeProvider } from "./context/Theme";
+import useTheme from "./hooks/useTheme";
+import { getThemeSession } from "./session/theme.server";
+
+export type LoaderData = {
+  theme: Theme | null;
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const themeSession = await getThemeSession(request);
+  const data: LoaderData = {
+    theme: themeSession.getTheme(),
+  };
+  return data;
+};
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -19,9 +35,10 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
-export default function App() {
+function App() {
+  const [theme] = useTheme();
   return (
-    <html lang="en">
+    <html lang="en" className={theme === Theme.DARK ? "dark" : ""}>
       <head>
         <Meta />
         <Links />
@@ -33,5 +50,14 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
+  );
+}
+
+export default function AppWithProviders() {
+  const data = useLoaderData<LoaderData>();
+  return (
+    <ThemeProvider specifiedTheme={data.theme}>
+      <App />
+    </ThemeProvider>
   );
 }
