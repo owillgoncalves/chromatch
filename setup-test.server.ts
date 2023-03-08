@@ -9,21 +9,17 @@ installGlobals();
 
 expect.extend({
   async toBeResponseLike(received: Response, expected: any) {
-    const { isNot } = this;
     let data = { ...await received.json() };
-    const assertObjects = Object.keys({ ...expected }).every((key) => {
-      return data[key] === expected[key];
-    });
+    const assertObjects = JSON.stringify(data) === JSON.stringify(expected);
     return {
       pass: assertObjects,
       message: () =>
-        `Response is${isNot ? " not" : ""} equal to ${JSON.stringify(expected)}`,
+        `Data don't match. Expected '${JSON.stringify(expected)}' but got '${JSON.stringify(data)}'`,
       expected,
       actual: data,
     };
   },
   async toBeThwownErrorLike(received: any, expected: { message: string; status: number}) {
-    const { isNot } = this;
     const responseError = received as Response;
     const data = await responseError.json();
     const assertMessage = data.message === expected.message;
@@ -31,7 +27,7 @@ expect.extend({
     return {
       pass: assertMessage && assertStatus,
       message: () =>
-        `Thrown error is${isNot ? " not" : ""} equal to ${JSON.stringify(expected)}`,
+        `Thrown error don't match. Expected '${JSON.stringify(expected)}' but got '${JSON.stringify(data)}'`,
       expected,
       actual: data,
     };
