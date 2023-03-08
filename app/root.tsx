@@ -10,9 +10,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useCatch,
   useLoaderData,
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css";
+import { ErrorComponent } from "./components/ErrorComponent";
 import { Layout } from "./components/Layout";
 import { Theme, ThemeProvider } from "./context/Theme";
 import useTheme from "./hooks/useTheme";
@@ -40,6 +42,49 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+export function ErrorBoundary({ error }: { error: Error }) {
+  const [theme] = useTheme();
+  return (
+    <html lang="en" className={theme === Theme.DARK ? "dark" : ""}>
+      <head>
+        <Meta />
+        <Links />
+      </head>
+      <body className="flex min-h-screen w-full flex-col bg-gray-100 p-4 dark:bg-gray-900">
+        <Layout>
+          <ErrorComponent message={error.message} />;
+        </Layout>
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+  const [theme] = useTheme();
+  return (
+    <html lang="en" className={theme === Theme.DARK ? "dark" : ""}>
+      <head>
+        <Meta />
+        <Links />
+      </head>
+      <body className="flex min-h-screen w-full flex-col bg-gray-100 p-4 dark:bg-gray-900">
+        <Layout>
+          <ErrorComponent
+            message={`${caught.data.message} | ${caught.status}`}
+          />
+        </Layout>
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
+      </body>
+    </html>
+  );
+}
+
 function App() {
   const [theme] = useTheme();
   return (
@@ -48,7 +93,7 @@ function App() {
         <Meta />
         <Links />
       </head>
-      <body className="flex min-h-screen w-full flex-col bg-gray-100 dark:bg-gray-900 p-4">
+      <body className="flex min-h-screen w-full flex-col bg-gray-100 p-4 dark:bg-gray-900">
         <Layout>
           <Outlet />
         </Layout>
