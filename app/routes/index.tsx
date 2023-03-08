@@ -1,32 +1,12 @@
-export default function Index() {
+import { CardLink } from "~/components/CardLink";
+
+export default function () {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+    <div className="grid w-full flex-1 grid-cols-1 gap-4 sm:gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
+      <CardLink description="#000000" title="HEX" path="/hex" />
+      <CardLink description="rgb(0, 0, 0)" title="RGB" path="/rgb" />
+      <CardLink description="hsl(0, 0%, 0%)" title="HSL" path="/hsl" />
+      <CardLink description="cmyk(0, 0, 0, 0)" title="CMYK" path="/cmyk" />
     </div>
   );
 }
