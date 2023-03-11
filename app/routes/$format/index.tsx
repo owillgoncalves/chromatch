@@ -1,8 +1,6 @@
-import { useRouteLoaderData } from "@remix-run/react";
 import { CardLink } from "~/components/CardLink";
 
 export default function () {
-  const data = useRouteLoaderData("routes/$format");
   return (
     <div className="grid w-full flex-1 grid-cols-1 gap-4 sm:gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
       <CardLink

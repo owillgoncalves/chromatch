@@ -7,11 +7,11 @@ import { formatIsValid } from "~/domains/formatIsValid.server";
 
 export const loader: LoaderFunction = async (request) => {
   const { format } = request.params;
-  const result = await formatIsValid(format);
+  const result = await formatIsValid({format});
   if (!result.success) {
     throw json({ message: getResultErrors(result) }, 400);
   }
-  return json({ format: result.data }, { status: 200 });
+  return json(result.data, { status: 200 });
 };
 
 export function ErrorBoundary({ error }: { error: Error }) {

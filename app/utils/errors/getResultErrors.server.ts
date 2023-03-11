@@ -1,6 +1,10 @@
-import type { ErrorResult } from "domain-functions";
+import type { ErrorResult, SchemaError } from "domain-functions";
 
 export const getResultErrors = (result: ErrorResult) => {
-  const errors = [...result.inputErrors, ...result.errors];
-  return errors.map((error) => error.message).join("\n\n");
+  const mappedErrors: SchemaError[] = result.errors.map((error) => ({
+    message: error.message,
+    path: ["Scope"]
+  }))
+  const errors = [...result.inputErrors, ...mappedErrors];
+  return errors.map(({ message, path }) => `${path}: ${message}`).join("\n\n");
 };
