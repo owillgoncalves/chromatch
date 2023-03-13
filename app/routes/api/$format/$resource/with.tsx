@@ -14,24 +14,21 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     throw json({ message: getResultErrors(formatResult) }, 400);
   }
   const result = await blend[formatResult.data.format as Formats]({
-    color: data.color,
-    secondColor: data.secondColor,
+    colors: [{color: data.color, secondColor: data.secondColor }],
     resource,
   });
   if (!result.success) {
     throw json({ message: getResultErrors(result) }, 400);
   }
-  const input = {
-    color: data.color,
-    secondColor: data.secondColor,
-  };
   return json(
     {
-      input,
-      output: {
-        resource: result.data.resource,
-        ...result.data.color,
+      input: {
+        format,
+        resource,
+        color: data.color,
+        secondColor: data.secondColor,
       },
+      output: { color: result.data.color },
     },
     { status: 200 }
   );

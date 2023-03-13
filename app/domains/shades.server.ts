@@ -5,13 +5,42 @@ import { convert } from "./convert.server";
 
 const getShades = makeDomainFunction(
   z.object({
-    color: ColorSchema.hsl,
+    colors: z
+      .array(
+        z.object({
+          color: ColorSchema.hsl,
+        })
+      )
+      .refine((value) => value.length === 1, {
+        message: "You can generate shades only for one color at a time",
+      }),
   })
-)(
-  async (input): Promise<{ shades: any }> => ({
-    shades: getHslShades(input.color),
+)(async ({ colors: [{ color }] }): Promise<{ colors: { color: string }[] }> => {
+  const shades = [];
+  const [h, s] = color.match(/\d+/g)!.map(Number);
+  for (let i = 0; i < 9; i++) {
+    shades.push({ color: `hsl(${h}, ${s}%, ${(i + 1) * 10}%)` });
+  }
+  return {
+    colors: shades,
+  };
+});
+
+const getShadesObjectFromArray = makeDomainFunction(
+  z.object({
+    colors: z.array(
+      z.object({
+        color: z.string(),
+      })
+    ),
   })
-);
+)(async ({ colors }): Promise<{ shades: Record<number, string> }> => {
+  const shades = {};
+  colors.forEach((shade, index) => {
+    Object.assign(shades, { [`${(index + 1) * 100}`]: shade.color });
+  });
+  return { shades };
+});
 
 const checkIfResourceIsShades = makeDomainFunction(
   z.object({
@@ -24,11 +53,23 @@ const checkIfResourceIsShades = makeDomainFunction(
 export const shades = {
   hex: collect({
     resource: checkIfResourceIsShades,
-    color: pipe(convert.fromHexToRgb, convert.fromRgbToHsl, getShades),
+    color: pipe(
+      convert.fromHexToRgb,
+      convert.fromRgbToHsl,
+      getShades,
+      convert.fromHslToRgb,
+      convert.fromRgbToHex,
+      getShadesObjectFromArray
+    ),
   }),
   rgb: collect({
     resource: checkIfResourceIsShades,
-    color: pipe(convert.fromRgbToHsl, getShades),
+    color: pipe(
+      convert.fromRgbToHsl,
+      getShades,
+      convert.fromHslToRgb,
+      getShadesObjectFromArray
+    ),
   }),
   hsl: collect({
     resource: checkIfResourceIsShades,
@@ -39,18 +80,10 @@ export const shades = {
     color: pipe(
       convert.fromCmykToRgb,
       convert.fromRgbToHsl,
-      getShades
+      getShades,
+      convert.fromHslToRgb,
+      convert.fromRgbToCmyk,
+      getShadesObjectFromArray
     ),
   }),
-};
-
-const getHslShades = (hslColor: string) => {
-  const shades = {};
-  const [h, s] = hslColor.match(/\d+/g)!.map(Number);
-  for (let i = 0; i < 9; i++) {
-    Object.assign(shades, {
-      [(i + 1) * 100]: `hsl(${h}, ${s}%, ${(i + 1) * 10}%)`,
-    });
-  }
-  return shades;
 };

@@ -14,22 +14,20 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     throw json({ message: getResultErrors(formatResult) }, 400);
   }
   const result = await shades[formatResult.data.format as Formats]({
-    color: data.color,
+    colors: [{ color: data.color, secondColor: data.secondColor }],
     resource,
   });
   if (!result.success) {
     throw json({ message: getResultErrors(result) }, 400);
   }
-  const input = {
-    color: data.color,
-  };
   return json(
     {
-      input,
-      output: {
-        resource: result.data.resource,
-        ...result.data.color,
+      input: {
+        format,
+        resource,
+        color: data.color,
       },
+      output: result.data.color,
     },
     { status: 200 }
   );

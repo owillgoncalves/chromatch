@@ -4,7 +4,7 @@ import { inputFromUrl } from "domain-functions";
 import { getResultErrors } from "~/utils/errors/getResultErrors.server";
 import { formatIsValid } from "~/domains/formatIsValid.server";
 import type { Formats } from "~/utils/client-types";
-import { convertToAll } from "~/domains/convertToAll.server";
+import { palette } from "~/domains/palette.server";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const { format, resource } = params;
@@ -13,7 +13,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   if (!formatResult.success) {
     throw json({ message: getResultErrors(formatResult) }, 400);
   }
-  const result = await convertToAll[formatResult.data.format as Formats]({
+  const result = await palette[formatResult.data.format as Formats]({
     colors: [{color: data.color, secondColor: data.secondColor }],
     resource,
   });
