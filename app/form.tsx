@@ -30,7 +30,7 @@ function Error(props: JSX.IntrinsicElements["div"]) {
 }
 
 function Field({ className, ...props }: JSX.IntrinsicElements["div"]) {
-  return <div className="flex h-20 flex-col" {...props} />;
+  return <div className="flex h-24 flex-col" {...props} />;
 }
 
 const Input = forwardRef<HTMLInputElement, JSX.IntrinsicElements["input"]>(

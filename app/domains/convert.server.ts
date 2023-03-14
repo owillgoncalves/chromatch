@@ -1,8 +1,8 @@
 import { makeDomainFunction } from "domain-functions";
 import { z } from "zod";
 import { ColorSchema } from "~/schemas/color";
+import { cmykToRgb } from "~/utils/colors/cmykToRgb";
 import {
-  cmykToRgb,
   convertColors,
   hexToRgb, //
   hslToRgb,

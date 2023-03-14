@@ -71,35 +71,64 @@ const analogue = makeDomainFunction(PaletteSchema)(
     )
 );
 
+const monochromatic = makeDomainFunction(PaletteSchema)(
+  async ({ colors: [{ color }] }): Promise<{ colors: { color: string }[] }> =>
+    generatePalette(
+      color,
+      [0, 0, 0, 0, 0],
+      [5, -10, 0, -10, 5],
+      [-15, -7, 0, 5, 10]
+    )
+);
+
+const triad = makeDomainFunction(PaletteSchema)(
+  async ({ colors: [{ color }] }): Promise<{ colors: { color: string }[] }> =>
+    generatePalette(
+      color,
+      [-59, 0, 0, 203, 203],
+      [-10, 10, 0, 10, 5],
+      [0, -20, 0, 0, -20]
+    )
+);
+
 export const palette = {
-  rgb: collect({
-    analogue: pipe(convert.fromRgbToHsl, analogue, convert.fromHslToRgb),
-  }),
-  hex: collect({
-    analogue,
-  }),
+  rgb: pipe(
+    convert.fromRgbToHsl,
+    collect({
+      analogue: pipe(analogue, convert.fromHslToRgb),
+      monochromatic: pipe(monochromatic, convert.fromHslToRgb),
+      triad: pipe(triad, convert.fromHslToRgb),
+    })
+  ),
+  hex: pipe(
+    convert.fromHexToRgb,
+    convert.fromRgbToHsl,
+    collect({
+      analogue: pipe(analogue, convert.fromHslToRgb, convert.fromRgbToHex),
+      monochromatic: pipe(
+        monochromatic,
+        convert.fromHslToRgb,
+        convert.fromRgbToHex
+      ),
+      triad: pipe(triad, convert.fromHslToRgb, convert.fromRgbToHex),
+    })
+  ),
   hsl: collect({
     analogue,
+    monochromatic,
+    triad,
   }),
-  cmyk: collect({
-    analogue,
-  }),
+  cmyk: pipe(
+    convert.fromCmykToRgb,
+    convert.fromRgbToHsl,
+    collect({
+      analogue: pipe(analogue, convert.fromHslToRgb, convert.fromRgbToCmyk),
+      monochromatic: pipe(
+        monochromatic,
+        convert.fromHslToRgb,
+        convert.fromRgbToCmyk
+      ),
+      triad: pipe(triad, convert.fromHslToRgb, convert.fromRgbToCmyk),
+    })
+  ),
 };
-
-const test = [
-  {
-    "color": "rgb(219, 165, 248)"
-  },
-  {
-    "color": "rgb(233, 118, 244)"
-  },
-  {
-    "color": "rgb(245, 163, 230)"
-  },
-  {
-    "color": "rgb(244, 118, 187)"
-  },
-  {
-    "color": "rgb(248, 165, 189)"
-  }
-]
