@@ -35,7 +35,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "New Remix App",
-  viewport: "width=device-width,initial-scale=1",
+  viewport: "width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0",
 });
 
 export const links: LinksFunction = () => [
