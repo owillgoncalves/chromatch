@@ -2,7 +2,6 @@ import type { ActionFunction } from "@remix-run/node";
 import { useRouteLoaderData } from "@remix-run/react";
 import { makeDomainFunction } from "domain-functions";
 import { z } from "zod";
-import { ColorCard } from "~/components/ColorCard";
 import { Form } from "~/form";
 import { formAction } from "~/form-action.server";
 import { FormColorSchema } from "~/schemas/form";
